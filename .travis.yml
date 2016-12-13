@@ -22,8 +22,9 @@ matrix:
     fast_finish: true
 
 before_script:
-  - pecl install rdkafka-2.0.1
-  - if [ "$deps" == "low" ]; then composer update --prefer-dist --prefer-lowest --prefer-stable; fi
-  - if [ "$deps" != "low" ]; then composer install --prefer-dist; fi
+  - if [[ ! $skip && $PHP = 5.* ]]; then pecl install rdkafka-1.0.0; fi
+  - if [[ ! $skip && $PHP = 7.* ]]; then pecl install rdkafka-2.0.1; fi
+  - composer update --prefer-dist --prefer-lowest --prefer-stable
+  - composer install --prefer-dist
 
 script: composer test
