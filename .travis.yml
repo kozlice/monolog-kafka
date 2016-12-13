@@ -19,8 +19,8 @@ matrix:
     fast_finish: true
 
 before_script:
-  - if [[ ! $skip && $PHP = 5.* ]]; then pecl install rdkafka-1.0.0; fi
-  - if [[ ! $skip && $PHP = 7.* ]]; then pecl install rdkafka-2.0.1; fi
+  - if [[ $TRAVIS_PHP_VERSION = 5.* ]]; then pecl install rdkafka-1.0.0; fi
+  - if [[ $TRAVIS_PHP_VERSION = 7.* ]]; then pecl install rdkafka-2.0.1; fi
   - composer update --prefer-dist --prefer-lowest --prefer-stable
   - composer install --prefer-dist
 
