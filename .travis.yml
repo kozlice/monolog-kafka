@@ -10,27 +10,26 @@ cache:
     - $HOME/.composer/cache
     - $HOME/librdkafka
 
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+
+env:
+  - RDKAFKA_VERSION=1.0.0
+  - RDKAFKA_VERSION=2.0.1
+  - RDKAFKA_VERSION=3.0.0
+  - RDKAFKA_VERSION=3.0.5
+
 matrix:
-    include:
-        - php: 5.6
-          env: RDKAFKA_VERSION=1.0.0
-        - php: 7.0
-          env: RDKAFKA_VERSION=2.0.1
-        - php: 7.1
-          env: RDKAFKA_VERSION=2.0.1
-        - php: 5.6
-          env: RDKAFKA_VERSION=3.0.0
-        - php: 7.0
-          env: RDKAFKA_VERSION=3.0.0
-        - php: 7.1
-          env: RDKAFKA_VERSION=3.0.0
-        - php: 5.6
-          env: RDKAFKA_VERSION=3.0.5
-        - php: 7.0
-          env: RDKAFKA_VERSION=3.0.5
-        - php: 7.1
-          env: RDKAFKA_VERSION=3.0.5
-    fast_finish: true
+  exclude:
+    - php: 5.6
+      env: RDKAFKA_VERSION=2.0.1
+    - php: 7.0
+      env: RDKAFKA_VERSION=1.0.0
+    - php: 7.1
+      env: RDKAFKA_VERSION=1.0.0
+  fast_finish: true
 
 before_script:
   - pecl install rdkafka-$RDKAFKA_VERSION
