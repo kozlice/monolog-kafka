@@ -13,13 +13,19 @@ cache:
 matrix:
     include:
         - php: 5.6
+          env: RDKAFKA_VERSION=1.0.0
         - php: 7.0
+          env: RDKAFKA_VERSION=2.0.1
         - php: 7.1
+          env: RDKAFKA_VERSION=2.0.1
+        - php: 7.0
+          env: RDKAFKA_VERSION=3.0.5
+        - php: 7.1
+          env: RDKAFKA_VERSION=3.0.5
     fast_finish: true
 
 before_script:
-  - if [[ $TRAVIS_PHP_VERSION = 5.* ]]; then pecl install rdkafka-1.0.0; fi
-  - if [[ $TRAVIS_PHP_VERSION = 7.* ]]; then pecl install rdkafka-2.0.1; fi
+  - pecl install rdkafka-$RDKAFKA_VERSION
   - composer update --prefer-dist --prefer-lowest --prefer-stable
   - composer install --prefer-dist
 

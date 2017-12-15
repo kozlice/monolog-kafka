@@ -6,9 +6,9 @@ Support for logging into Apache Kafka using [rdkafka extension](https://github.c
 
 Usage example:
 
-    $config = new RdKafka\Conf();
+    $config = new \RdKafka\Conf();
     $config->set('metadata.broker.list', '127.0.0.1');
-    $producer = new RdKafka\Producer($config);
+    $producer = new \RdKafka\Producer($config);
     $logger = new Logger('my_logger');
     $logger->pushHandler(new KafkaHandler($producer, 'test'));
 
