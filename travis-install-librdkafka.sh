@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Borrowed from: https://github.com/confluentinc/confluent-kafka-python
 # Downloads, builds and installs librdkafka into <install-dir>
