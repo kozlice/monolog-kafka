@@ -4,7 +4,7 @@ os: linux
 dist: xenial
 
 before_install:
-  - ./travis-install-librdkafka.sh v1.7.0 $HOME
+  - sudo ./travis-install-librdkafka.sh v1.7.0 $HOME
 
 cache:
   directories:
