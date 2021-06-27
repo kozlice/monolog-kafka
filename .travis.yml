@@ -11,6 +11,7 @@ cache:
   directories:
     - $HOME/.composer/cache
     - $HOME/librdkafka
+    - $HOME/kafka
 
 jdk: openjdk11
 
