@@ -21,15 +21,10 @@ env:
 
 matrix:
   exclude:
-    - php: 7.4
-      env: RDKAFKA_VERSION=4.0.2
-    - php: 7.4
-      env: RDKAFKA_VERSION=4.1.2
-    - php: 7.4
-      env: RDKAFKA_VERSION=5.0.0
-
     - php: 8.0
-      env: RDKAFKA_VERSION=5.0.0
+      env: RDKAFKA_VERSION=4.0.2
+    - php: 8.0
+      env: RDKAFKA_VERSION=4.1.2
   fast_finish: true
 
 before_script:
