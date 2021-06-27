@@ -1,6 +1,6 @@
 # [Apache Kafka](https://kafka.apache.org/) handler for [Monolog](https://github.com/Seldaek/monolog)
 
-[![Build Status](https://travis-ci.org/kozlice/monolog-kafka.svg?branch=master)](https://travis-ci.org/kozlice/monolog-kafka)
+[![Build Status](https://api.travis-ci.com/kozlice/monolog-kafka.svg?branch=master)](https://travis-ci.org/kozlice/monolog-kafka)
 
 Support for logging into Apache Kafka using [rdkafka extension](https://github.com/arnaud-lb/php-rdkafka).
 
