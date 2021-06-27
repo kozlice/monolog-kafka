@@ -1,9 +1,10 @@
 language: php
 
-sudo: required
+os: linux
+dist: xenial
 
 before_install:
-  - sudo ./travis-install-librdkafka.sh v1.7.0 $HOME
+  - ./travis-install-librdkafka.sh v1.7.0 $HOME
 
 cache:
   directories:
@@ -19,7 +20,7 @@ env:
   - RDKAFKA_VERSION=4.1.2
   - RDKAFKA_VERSION=5.0.0
 
-matrix:
+jobs:
   exclude:
     - php: 8.0
       env: RDKAFKA_VERSION=4.0.2
