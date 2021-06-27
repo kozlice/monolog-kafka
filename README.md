@@ -13,7 +13,7 @@ Usage example:
     $logger->pushHandler(new KafkaHandler($producer, 'test'));
 
 Works with:
-- PHP 5.6 & [rdkafka 1.*](https://pecl.php.net/package/rdkafka/1.0.0)
-- PHP 7+ & [rdkafka 2.*](https://pecl.php.net/package/rdkafka/2.0.0) and [3.*](https://pecl.php.net/package/rdkafka/3.0.0)
+- PHP 7.4+ with PECL rdkafka 4.x/5.x
+- PHP 8+ with PECL rdkafka 5.x
 
-Manually tested with Apache Kafka 0.10.1.
+Manually tested with Apache Kafka 2.8.0.

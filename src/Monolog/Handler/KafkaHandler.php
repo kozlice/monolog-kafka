@@ -2,6 +2,7 @@
 
 namespace Kozlice\Monolog\Handler;
 
+use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
@@ -26,24 +27,18 @@ use RdKafka\TopicConf;
  */
 class KafkaHandler extends AbstractProcessingHandler
 {
-    /**
-     * @var ProducerTopic
-     */
-    private $topic;
+    private ProducerTopic $topic;
+    private Producer $producer;
+    private int $flushTimeout = 100;
 
     /**
-     * @var Producer
+     * @param Producer   $producer    Kafka message producer instance
+     * @param string     $topicName   Kafka topic name (if it doesn't exist yet, will be created)
+     * @param ?TopicConf $topicConfig Kafka topic config (optional)
+     * @param int        $level       The minimum logging level at which this handler will be triggered
+     * @param bool       $bubble      Whether the messages that are handled can bubble up the stack or not
      */
-    private $producer;
-
-    /**
-     * @param Producer  $producer    Kafka message producer instance
-     * @param string    $topicName   Kafka topic name (if it doesn't exist yet, will be created)
-     * @param TopicConf $topicConfig Kafka topic config (optional)
-     * @param int       $level       The minimum logging level at which this handler will be triggered
-     * @param bool      $bubble      Whether the messages that are handled can bubble up the stack or not
-     */
-    public function __construct(Producer $producer, $topicName, TopicConf $topicConfig = null, $level = Logger::DEBUG, $bubble = true)
+    public function __construct(Producer $producer, $topicName, TopicConf $topicConfig = null, int $level = Logger::DEBUG, bool $bubble = true)
     {
         parent::__construct($level, $bubble);
         $this->producer = $producer;
@@ -53,6 +48,18 @@ class KafkaHandler extends AbstractProcessingHandler
         $this->topic = $producer->newTopic($topicName, $topicConfig);
     }
 
+    public function setFlushTimeout(int $flushTimeout): void
+    {
+        $this->flushTimeout = $flushTimeout;
+    }
+
+    public function __destruct()
+    {
+        // Starting from rdkafka 4.0, programs MUST call flush() before shutting down, otherwise
+        // some messages and callbacks may be lost.
+        $this->producer->flush($this->flushTimeout);
+    }
+
     /**
      * Writes the record down to the log of the implementing handler
      *
@@ -60,7 +67,7 @@ class KafkaHandler extends AbstractProcessingHandler
      *
      * @return void
      */
-    protected function write(array $record)
+    protected function write(array $record): void
     {
         $data = (string)$record['formatted'];
         $this->topic->produce(RD_KAFKA_PARTITION_UA, 0, $data);
@@ -69,7 +76,7 @@ class KafkaHandler extends AbstractProcessingHandler
     /**
      * {@inheritDoc}
      */
-    protected function getDefaultFormatter()
+    protected function getDefaultFormatter(): FormatterInterface
     {
         return new LineFormatter('[%datetime%] %channel%.%level_name%: %message% %context% %extra%');
     }

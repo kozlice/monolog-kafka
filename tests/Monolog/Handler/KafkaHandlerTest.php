@@ -4,10 +4,14 @@ namespace Monolog\Handler;
 
 use Kozlice\Monolog\Handler\KafkaHandler;
 use Monolog\Logger;
+use PHPUnit\Framework\TestCase;
+use RdKafka\Producer;
+use RdKafka\ProducerTopic;
+use RdKafka\TopicConf;
 
-class KafkaHandlerTest extends \PHPUnit_Framework_TestCase
+class KafkaHandlerTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -18,32 +22,32 @@ class KafkaHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testConstruct()
     {
-        $topic = $this->createPartialMock('RdKafka\\ProducerTopic', ['produce']);
+        $topic = $this->createMock(ProducerTopic::class);
 
-        $producer = $this->createPartialMock('RdKafka\\Producer', ['newTopic']);
+        $producer = $this->createMock(Producer::class);
         $producer->expects($this->once())
             ->method('newTopic')
-            ->with('test', $this->isInstanceOf('RdKafka\\TopicConf'))
+            ->with('test', $this->isInstanceOf(TopicConf::class))
             ->willReturn($topic);
 
         $handler = new KafkaHandler($producer, 'test');
-        $this->assertInstanceOf('Kozlice\\Monolog\\Handler\\KafkaHandler', $handler);
+        $this->assertInstanceOf(KafkaHandler::class, $handler);
     }
 
     public function testConstructWithTopicConfig()
     {
-        $topic = $this->createPartialMock('RdKafka\\ProducerTopic', ['produce']);
+        $topic = $this->createMock(ProducerTopic::class);
 
-        $topicConfig = $this->createPartialMock('RdKafka\\TopicConf', []);
+        $topicConfig = $this->createMock(TopicConf::class);
 
-        $producer = $this->createPartialMock('RdKafka\\Producer', ['newTopic']);
+        $producer = $this->createMock(Producer::class);
         $producer->expects($this->once())
             ->method('newTopic')
             ->with('test', $topicConfig)
             ->willReturn($topic);
 
         $handler = new KafkaHandler($producer, 'test', $topicConfig);
-        $this->assertInstanceOf('Kozlice\\Monolog\\Handler\\KafkaHandler', $handler);
+        $this->assertInstanceOf(KafkaHandler::class, $handler);
     }
 
     public function testShouldLogMessage()
@@ -51,19 +55,37 @@ class KafkaHandlerTest extends \PHPUnit_Framework_TestCase
         $record = $this->getRecord();
         $expectedMessage = sprintf("[%s] test.WARNING: test [] []", $record['datetime']);
 
-        $topic = $this->createPartialMock('RdKafka\\ProducerTopic', ['produce']);
+        $topic = $this->createMock(ProducerTopic::class);
         $topic->expects($this->once())
             ->method('produce')
             ->with(RD_KAFKA_PARTITION_UA, 0, $expectedMessage);
 
-        $producer = $this->createPartialMock('RdKafka\\Producer', ['newTopic']);
+        $producer = $this->createMock(Producer::class);
         $producer->expects($this->once())
             ->method('newTopic')
-            ->with('test', $this->isInstanceOf('RdKafka\\TopicConf'))
+            ->with('test', $this->isInstanceOf(TopicConf::class))
             ->willReturn($topic);
 
         $handler = new KafkaHandler($producer, 'test');
         $handler->handle($record);
+    }
+
+    public function testShouldFlushOnDestructionWithGivenTimeout()
+    {
+        $topic = $this->createMock(ProducerTopic::class);
+
+        $producer = $this->createMock(Producer::class);
+        $producer->expects($this->once())
+            ->method('newTopic')
+            ->with('test', $this->isInstanceOf(TopicConf::class))
+            ->willReturn($topic);
+        $producer->expects($this->once())
+            ->method('flush')
+            ->with(500);
+
+        $handler = new KafkaHandler($producer, 'test');
+        $handler->setFlushTimeout(500);
+        unset($handler);
     }
 
     /**
