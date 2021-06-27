@@ -4,12 +4,16 @@ os: linux
 dist: xenial
 
 before_install:
-  - sudo ./travis-install-librdkafka.sh v1.7.0 $HOME
+  - sudo ./travis-install-librdkafka.sh v1.3.0 $HOME
+  - sudo ./travis-install-kafka.sh 2.13 2.8.0 $HOME
 
 cache:
   directories:
     - $HOME/.composer/cache
     - $HOME/librdkafka
+    - $HOME/kafka
+
+jdk: openjdk11
 
 php:
   - 7.4
@@ -33,4 +37,6 @@ before_script:
   - composer update --prefer-dist --prefer-lowest --prefer-stable
   - composer install --prefer-dist
 
-script: composer test
+script:
+  - vendor/bin/phpunit tests --group=Unit
+  - KAFKA_PATH=./$HOME/kafka vendor/bin/phpunit tests --group=Integration
