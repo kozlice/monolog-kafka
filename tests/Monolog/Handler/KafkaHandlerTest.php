@@ -108,6 +108,10 @@ class KafkaHandlerTest extends TestCase
     public function testShouldFindMessagesInKafkaTopic()
     {
         $cwd = realpath(getenv('KAFKA_PATH'));
+        if (false === $stepTimeout = getenv('STEP_TIMEOUT')) {
+            $stepTimeout = 1;
+        }
+        $stepTimeout = (int) $stepTimeout;
 
         $zookeeper = new Process(['bin/zookeeper-server-start.sh', 'config/zookeeper.properties'], $cwd);
         $zookeeper->start();
@@ -116,7 +120,7 @@ class KafkaHandlerTest extends TestCase
         });
 
         // Wait a little more to be sure that Zookeeper is running
-        sleep(10);
+        sleep($stepTimeout);
 
         $kafka = new Process(['bin/kafka-server-start.sh', 'config/server.properties'], $cwd);
         $kafka->start();
@@ -125,7 +129,7 @@ class KafkaHandlerTest extends TestCase
         });
 
         // Wait a little more to be sure that Kafka is running
-        sleep(10);
+        sleep($stepTimeout);
 
         $createTopic = new Process(['bin/kafka-topics.sh', '--create', '--topic', 'monolog', '--bootstrap-server', 'localhost:9092'], $cwd);
         $createTopic->run();
@@ -142,7 +146,7 @@ class KafkaHandlerTest extends TestCase
         // There will be flush to Kafka on handler destruction.
         unset($logger, $handler);
         // Wait a little to be sure that flush is done before we stop Kafka
-        sleep(1);
+        sleep($stepTimeout);
 
         $consume = new Process(['bin/kafka-console-consumer.sh', '--topic', 'monolog', '--from-beginning', '--bootstrap-server', 'localhost:9092', '--timeout-ms', '1000'], $cwd);
         $consume->run();

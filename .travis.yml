@@ -39,4 +39,4 @@ before_script:
 
 script:
   - vendor/bin/phpunit tests --group=Unit
-  - KAFKA_PATH=$HOME/kafka vendor/bin/phpunit tests --group=Integration
+  - KAFKA_PATH=$HOME/kafka STEP_TIMEOUT=30 vendor/bin/phpunit tests --group=Integration
