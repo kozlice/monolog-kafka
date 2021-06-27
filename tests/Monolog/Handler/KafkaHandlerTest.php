@@ -131,7 +131,7 @@ class KafkaHandlerTest extends TestCase
         $createTopic->run();
 
         $config = new Conf();
-        $config->set('metadata.broker.list', '127.0.0.1');
+        $config->set('metadata.broker.list', 'localhost');
         $producer = new Producer($config);
         $logger = new Logger('test');
         $handler = new KafkaHandler($producer, 'monolog');
