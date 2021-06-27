@@ -115,6 +115,9 @@ class KafkaHandlerTest extends TestCase
             return $descriptor === Process::OUT && false !== strpos($data, 'INFO binding to port');
         });
 
+        // Wait a little more to be sure that Zookeeper is running
+        sleep(10);
+
         $kafka = new Process(['bin/kafka-server-start.sh', 'config/server.properties'], $cwd);
         $kafka->start();
         $kafka->waitUntil(function ($descriptor, $data) {
