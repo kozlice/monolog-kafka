@@ -121,6 +121,9 @@ class KafkaHandlerTest extends TestCase
             return $descriptor === Process::OUT && 0 !== preg_match('~INFO \[KafkaServer id=\d+\] started~', $data);
         });
 
+        // Wait a little more to be sure that Kafka is running
+        sleep(10);
+
         $createTopic = new Process(['bin/kafka-topics.sh', '--create', '--topic', 'monolog', '--bootstrap-server', 'localhost:9092'], $cwd);
         $createTopic->run();
 
@@ -129,14 +132,14 @@ class KafkaHandlerTest extends TestCase
         $producer = new Producer($config);
         $logger = new Logger('test');
         $handler = new KafkaHandler($producer, 'monolog');
-        $handler->setFlushTimeout(5000);
         $logger->pushHandler($handler);
 
         $logger->info('Some info', ['message' => 'Hello']);
         $logger->error('Some error');
         // There will be flush to Kafka on handler destruction.
         unset($logger, $handler);
-        sleep(10);
+        // Wait a little to be sure that flush is done before we stop Kafka
+        sleep(1);
 
         $consume = new Process(['bin/kafka-console-consumer.sh', '--topic', 'monolog', '--from-beginning', '--bootstrap-server', 'localhost:9092', '--timeout-ms', '1000'], $cwd);
         $consume->run();
