@@ -129,13 +129,14 @@ class KafkaHandlerTest extends TestCase
         $producer = new Producer($config);
         $logger = new Logger('test');
         $handler = new KafkaHandler($producer, 'monolog');
+        $handler->setFlushTimeout(5000);
         $logger->pushHandler($handler);
 
         $logger->info('Some info', ['message' => 'Hello']);
         $logger->error('Some error');
         // There will be flush to Kafka on handler destruction.
         unset($logger, $handler);
-        sleep(1);
+        sleep(10);
 
         $consume = new Process(['bin/kafka-console-consumer.sh', '--topic', 'monolog', '--from-beginning', '--bootstrap-server', 'localhost:9092', '--timeout-ms', '1000'], $cwd);
         $consume->run();
